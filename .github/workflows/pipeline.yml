@@ -5,23 +5,29 @@ on:
     branches: [ main ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v3
 
-    - name: Descargar repositorio
-      uses: actions/checkout@v3
+      - name: Instalar Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Instalar Node
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Instalar dependencias
+        run: npm ci
 
-    - name: Instalar dependencias
-      run: npm install
+      - name: Ejecutar pruebas
+        run: npx jest
 
-    - name: Ejecutar pruebas
-      run: npm test
+      - name: Generar cobertura
+        run: npx jest --coverage
+
+      - name: Subir reporte de cobertura
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
